@@ -18,6 +18,21 @@ func InsertUser(db *sql.DB, username string, password string) error {
 	return err
 }
 
+func InsertToken(db *sql.DB, username string, token []byte) error {
+	_, err := db.Exec(queries.InsertTokenQuery, username, token)
+	return err
+}
+
+func GetTokensForUser(db *sql.DB, username string) (res *sql.Rows, err error) {
+	res, err = db.Query(queries.GetTokensQuery, username)
+	return
+}
+
+func DeleteToken(db *sql.DB, token []byte) (err error) {
+	_, err = db.Exec(queries.DeleteTokenQuery, token)
+	return
+}
+
 func AuthenticateUser(db *sql.DB, username string, password string) (res *sql.Rows, err error) {
 	res, err = db.Query(queries.AuthenticateUserQuery, username, password)
 	return

@@ -38,6 +38,11 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/users", routes.InsertUser(db)).Methods("POST")
 	router.HandleFunc("/users/authenticate", routes.AuthenticateUser(db)).Methods("POST")
+	router.HandleFunc("/token", routes.CheckToken(db)).Methods("POST")
 	fmt.Printf("Listening at port 8000...\n")
-	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
+	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
+	allowedOrigins := handlers.AllowedOrigins([]string{"http://localhost:3000"})
+	corsHandler := handlers.CORS(allowedHeaders, allowedMethods, allowedOrigins, handlers.AllowCredentials())
+	log.Fatal(http.ListenAndServe(":8000", corsHandler(router)))
 }
