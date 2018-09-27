@@ -9,3 +9,5 @@ const InsertTokenQuery = `INSERT INTO public.token (username, token) VALUES ($1,
 const GetTokensQuery = `SELECT token, inserted_date FROM public.token WHERE username=$1`
 
 const DeleteTokenQuery = `DELETE FROM token WHERE token=$1`
+
+const DeleteTokensByUser = `DELETE FROM token WHERE user=$1`

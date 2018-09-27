@@ -33,6 +33,11 @@ func DeleteToken(db *sql.DB, token []byte) (err error) {
 	return
 }
 
+func DeleteTokensByUser(db *sql.DB, user string) (err error) {
+	_, err = db.Exec(queries.DeleteTokensByUser, user)
+	return
+}
+
 func AuthenticateUser(db *sql.DB, username string, password string) (res *sql.Rows, err error) {
 	res, err = db.Query(queries.AuthenticateUserQuery, username, password)
 	return

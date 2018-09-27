@@ -39,6 +39,7 @@ func main() {
 	router.HandleFunc("/users", routes.InsertUser(db)).Methods("POST")
 	router.HandleFunc("/users/authenticate", routes.AuthenticateUser(db)).Methods("POST")
 	router.HandleFunc("/token", routes.CheckToken(db)).Methods("POST")
+	router.HandleFunc("/token/invalidate", routes.DeleteToken(db)).Methods("POST")
 	fmt.Printf("Listening at port 8000...\n")
 	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})

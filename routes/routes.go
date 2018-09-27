@@ -75,8 +75,6 @@ func CheckToken(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				for res.Next() {
 					err := res.Scan(&token, &insertedDate)
 					if err == nil {
-						log.Println(insertedDate)
-						log.Println(insertedDate.AddDate(0, 0, 7))
 						if insertedDate.AddDate(0, 0, 7).Before(time.Now()) {
 							log.Println("deleting token")
 							err := dao.DeleteToken(db, token)
@@ -105,6 +103,32 @@ func CheckToken(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 					json.NewEncoder(w).Encode(PostResponse{Success: false, Message: "Invalid Cookie"})
 				}
 			}
+		}
+	}
+}
+
+func DeleteToken(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		cookie := http.Cookie{
+			Name:   "auth-token",
+			Value:  "delete",
+			MaxAge: -1,
+			Path:   "/"}
+		http.SetCookie(w, &cookie)
+
+		var user User
+		json.NewDecoder(r.Body).Decode(&user)
+
+		log.Println(user)
+
+		err := dao.DeleteTokensByUser(db, user.Username)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(PostResponse{Success: false, Message: "Internal Server Error"})
+		} else {
+			w.WriteHeader(http.StatusNoContent)
 		}
 	}
 }
